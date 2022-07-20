@@ -34,7 +34,7 @@ smoke_test:
 
 build:
   image: docker:latest
-  stage: buid
+  stage: build
   services:
     - docker:dind
   before_script:
