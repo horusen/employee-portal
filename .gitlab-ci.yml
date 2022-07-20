@@ -25,6 +25,7 @@ smoke_test:
   script:
     - pytest --html=pytest_reports/pytest-reports.html
   artifacts:
+    when: always
     paths:
       - pytest_reports/
     expire_in: "30 days"
