@@ -19,9 +19,7 @@ smoke_test:
   image: python:3.8.0-slim
   before_script:
     - pip install pytest-html
-    - pip install Flask
-    - pip install SQLAlchemy
-    - pip install Flask-SQLAlchemy
+    - pip install -r requirements.txt
   script:
     - pytest --html=pytest_reports/pytest-reports.html
   artifacts:
