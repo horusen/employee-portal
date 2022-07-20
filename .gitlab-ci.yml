@@ -1,4 +1,8 @@
+stages:
+  - test
+
 lint_test:
+  stage: test
   image: python:3.8.0-slim
   before_script:
     - pip install flake8-html
@@ -8,4 +12,16 @@ lint_test:
     when: always
     paths:
       - "flake_reports/"
+    expire_in: "30 days"
+
+smoke_test:
+  stage: test
+  image: python:3.8.0-slim
+  before_script:
+    - pip install pytest-html
+  script:
+    - pytest --html=pytest_reports/pytest-reports.html
+  artifacts:
+    paths:
+      - pytest_reports/
     expire_in: "30 days"
