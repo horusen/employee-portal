@@ -1,9 +1,11 @@
 stages:
   - test
   - build
+  - deploy stage
 
 variables:
-  DOCKER_IMAGE_TAG: $CI_REGISTRY_IMAGE/employee-image:$CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE_TAG: $CI_REGISTRY_IMAGE/employee-image:$CI_REF_NAME_SLUG
+  HEROKU_STAGING_URL: registry.heroku.com/emportal-stage.herokuapp.com/web
 
 lint_test:
   stage: test
@@ -43,3 +45,15 @@ build:
     - docker build -t $DOCKER_IMAGE_TAG .
     - docker images
     - docker push $DOCKER_IMAGE_TAG
+
+staging:
+  image: docker:latest
+  stage: deploy stage
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+  script:
+    - docker pull -t $HEROKU_STAGING_URL $DOCKER_IMAGE_TAG
+    - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
+    - docker push $HEROKU_STAGING_URL
