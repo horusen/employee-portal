@@ -5,7 +5,8 @@ stages:
 
 variables:
   DOCKER_IMAGE_TAG: $CI_REGISTRY_IMAGE/employee-image:$CI_COMMIT_REF_SLUG
-  HEROKU_STAGING_URL: registry.heroku.com/emportal-stage.herokuapp.com/web
+  HEROKU_APP_NAME: emportal-stage
+  HEROKU_STAGING_URL: registry.heroku.com/$HEROKU_APP_NAME/web
 
 lint_test:
   stage: test
