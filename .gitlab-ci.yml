@@ -2,7 +2,7 @@ stages:
   - test
   - build
   - deploy stage
-
+  - deploy test
 variables:
   DOCKER_IMAGE_TAG: $CI_REGISTRY_IMAGE/employee-image:$CI_COMMIT_REF_SLUG
   HEROKU_APP_NAME: emportal-stage
@@ -59,3 +59,12 @@ staging:
     - docker tag $DOCKER_IMAGE_TAG $HEROKU_STAGING_URL
     - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
     - docker push $HEROKU_STAGING_URL
+
+
+deploying:
+  image: node:latest
+  stage: deploy test
+  before_script:
+    - docker login -u _ -p $HEROKU_AUTH_TOKEN
+  script:
+    - heroku container:release web
