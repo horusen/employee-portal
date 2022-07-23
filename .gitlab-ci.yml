@@ -65,6 +65,6 @@ deploying:
   image: node:latest
   stage: deploy test
   before_script:
-    - docker login -u _ -p $HEROKU_AUTH_TOKEN
+    - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
   script:
     - heroku container:release web
