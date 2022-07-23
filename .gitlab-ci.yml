@@ -67,4 +67,4 @@ deploying:
   before_script:
     - npm install -g heroku
   script:
-    - HEROKU_API_KEY=$HEROKU_AUTH_TOKEN heroku container:release web --app $HEROKU_STAGING_URL
+    - HEROKU_API_KEY=$HEROKU_AUTH_TOKEN heroku container:release web --app $HEROKU_APP_NAME
