@@ -71,8 +71,7 @@ test staging:
   image: alpine
   stage: test stage
   before_script:
-    - apt-get --no-cache update
-    - apt-get install curl
+    - apk --no-cache add curl
   script:
     - curl $STAGING_APP_URL | grep "Employee Data"
     
