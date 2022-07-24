@@ -57,7 +57,7 @@ staging:
   stage: stage
   environment:
     name: staging
-    url: $STAGE_APP_URL
+    url: $STAGING_APP_URL
   services:
     - docker:dind
   before_script:
