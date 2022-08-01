@@ -74,7 +74,7 @@ deploy feature:
     - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $STAGING_APP_NAME 
     - echo "APP is deployed on https://$FEATURE_APP.herokuapp.com"
   only:
-    - /^feature-*$
+    - /^feature-.*$/
 
 staging:
   image: docker:latest
