@@ -18,8 +18,7 @@ lint_test:
   stage: test
   image: python:3.8.0-slim
   before_script:
-    - pip install --upgrade pip
-    - pip install flake8-html
+    - pip install flake8-html==0.4.2
   script:
     - flake8 --format=html --htmldir=flake_reports/
   artifacts:
