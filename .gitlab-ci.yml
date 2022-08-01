@@ -62,8 +62,8 @@ deploy feature:
   services:
     - docker:dind
   before_script:
-    - export $FEATURE_APP="$CI_ENVIRONMENT_SLUG"
-    - export $HEROKU_FEATURE_REGISTRY_URL="registry.heroku.com/$FEATURE_APP/web"
+    - export FEATURE_APP="$CI_ENVIRONMENT_SLUG"
+    - export HEROKU_FEATURE_REGISTRY_URL="registry.heroku.com/$FEATURE_APP/web"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
   script:
     - docker pull $DOCKER_IMAGE_TAG
