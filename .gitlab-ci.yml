@@ -55,6 +55,9 @@ build:
 staging:
   image: docker:latest
   stage: stage
+  environment:
+    name: staging
+    url: $STAGING_APP_URL
   services:
     - docker:dind
   before_script:
@@ -81,6 +84,9 @@ deploying:
   services:
     - docker:dind
   stage: deploy
+  environment:
+    name: production
+    url: $PRODUCTION_APP_URL
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
@@ -90,8 +96,8 @@ deploying:
     - docker push $PRODUCTION_APP_REGISTRY_URL
     - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $PRODUCTION_APP_NAME
     - echo "APP is deployed on $STAGE_APP_URL"
-  only:
-    - main
+  # only:
+  #   - main
     
 
 
