@@ -58,11 +58,11 @@ deploy feature:
   stage: deploy feature
   environment:
     name: review/$CI_COMMIT_REF_NAME
-    url: https://$CI_ENVIRONMENT_SLUG.herokuapp.com
+    url: https://$CI_COMMIT_SHORT_SHA.herokuapp.com
   services:
     - docker:dind
   before_script:
-    - export FEATURE_APP="$CI_ENVIRONMENT_SLUG"
+    - export FEATURE_APP="$CI_COMMIT_SHORT_SHA"
     - export HEROKU_FEATURE_REGISTRY_URL="registry.heroku.com/$FEATURE_APP/web"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
   script:
@@ -71,7 +71,7 @@ deploy feature:
     - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli create $FEATURE_APP 
     - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
     - docker push $HEROKU_FEATURE_REGISTRY_URL
-    - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $STAGING_APP_NAME 
+    - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $FEATURE_APP 
     - echo "APP is deployed on https://$FEATURE_APP.herokuapp.com"
   only:
     - /^feature-.*$/
