@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - deploy feature
   - stage
   - test stage
   - deploy
@@ -13,18 +14,18 @@ variables:
   STAGING_APP_URL: https://$STAGING_APP_NAME.herokuapp.com"
   PRODUCTION_APP_URL: https://$PRODUCTION_APP_NAME.herokuapp.com"
 
-lint_test:
-  stage: test
-  image: python:3.8.0-slim
-  before_script:
-    - pip install flake8-html
-  script:
-    - flake8 --format=html --htmldir=flake_reports/
-  artifacts:
-    when: always
-    paths:
-      - "flake_reports/"
-    expire_in: "30 days"
+# lint_test:
+#   stage: test
+#   image: python:3.8.0-slim
+#   before_script:
+#     - pip install flake8-html
+#   script:
+#     - flake8 --format=html --htmldir=flake_reports/
+#   artifacts:
+#     when: always
+#     paths:
+#       - "flake_reports/"
+#     expire_in: "30 days"
 
 smoke_test:
   stage: test
@@ -52,6 +53,29 @@ build:
     - docker images
     - docker push $DOCKER_IMAGE_TAG
 
+deploy feature:
+  image: docker:latest
+  stage: deploy feature
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_COMMIT_SHORT_SHA.herokuapp.com
+  services:
+    - docker:dind
+  before_script:
+    - export FEATURE_APP="$CI_COMMIT_SHORT_SHA"
+    - export HEROKU_FEATURE_REGISTRY_URL="registry.heroku.com/$FEATURE_APP/web"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+  script:
+    - docker pull $DOCKER_IMAGE_TAG
+    - docker tag $DOCKER_IMAGE_TAG $HEROKU_FEATURE_REGISTRY_URL
+    - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli create $FEATURE_APP 
+    - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
+    - docker push $HEROKU_FEATURE_REGISTRY_URL
+    - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $FEATURE_APP 
+    - echo "APP is deployed on https://$FEATURE_APP.herokuapp.com"
+  only:
+    - /^feature-.*$/
+
 staging:
   image: docker:latest
   stage: stage
@@ -69,6 +93,8 @@ staging:
     - docker push $STAGING_APP_REGISTRY_URL
     - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $STAGING_APP_NAME 
     - echo "APP is deployed on $STAGE_APP_URL"
+  only:
+    - main
 
 # test staging:
 #   image: alpine
@@ -96,8 +122,8 @@ deploying:
     - docker push $PRODUCTION_APP_REGISTRY_URL
     - docker run --rm -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app $PRODUCTION_APP_NAME
     - echo "APP is deployed on $STAGE_APP_URL"
-  # only:
-  #   - main
+  only:
+    - main
     
 
 
