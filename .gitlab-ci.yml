@@ -2,6 +2,7 @@ stages:
   - test
   - build
   - deploy feature
+  - stop feature
   - stage
   - test stage
   - deploy
@@ -59,6 +60,7 @@ deploy feature:
   environment:
     name: review/$CI_COMMIT_REF_NAME
     url: https://$CI_COMMIT_SHORT_SHA.herokuapp.com
+    on_stop: stop feature
   services:
     - docker:dind
   before_script:
@@ -75,6 +77,24 @@ deploy feature:
     - echo "APP is deployed on https://$FEATURE_APP.herokuapp.com"
   only:
     - /^feature-.*$/
+
+
+stop feature:
+  image: docker:latest
+  stage: stop feature
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  variables: 
+    GIT_STRATEGY: none
+  services:
+    - docker:dind
+  before_script:
+    - export FEATURE_APP=$CI_COMMIT_SHORT_SHA
+  script:
+    - docker run -e HEROKU_API_KEY=$HEROKU_AUTH_TOKEN --rm wingrunr21/alpine-heroku-cli apps:destroy --app $FEATURE_APP --confirm $FEATURE_APP
+    - echo "Feature app is destroy"
+  when: manual
 
 staging:
   image: docker:latest
@@ -124,6 +144,7 @@ deploying:
     - echo "APP is deployed on $STAGE_APP_URL"
   only:
     - main
+  when: manual
     
 
 
