@@ -28,6 +28,7 @@ The GitLab CI/CD pipeline for the Employee Portal project is designed to automat
 ## :hammer_and_wrench: Tech Stack
 
 - **CI/CD Tools**: GitLab CI/CD, Docker
+- **Programming Language**: Python (flask)
 - **Testing**: Pytest
 - **Deployment**: Heroku
 
